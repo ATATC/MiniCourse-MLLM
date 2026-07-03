@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<template id="__bundler_thumbnail" data-bg-color="#14233c">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#14233c"></rect>
+    <circle cx="600" cy="330" r="120" fill="none" stroke="#2a6fdb" stroke-width="14"></circle>
+    <path d="M540 330 L580 370 L660 290" fill="none" stroke="#2a6fdb" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"></path>
+    <text x="600" y="540" font-family="Lato, sans-serif" font-size="56" font-weight="900" fill="#ffffff" text-anchor="middle">MLLM</text>
+    <text x="600" y="590" font-family="Lato, sans-serif" font-size="26" fill="#93a7c8" text-anchor="middle">Mini Course</text>
+  </svg>
+</template>
+<meta charset="UTF-8"></meta>
+<link rel="icon" type="image/jpeg" href="img/portrait.jpg"></link>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+<title>MiniCourse: Multimodal LLM (MLLM)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"></link>
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400&amp;family=Source+Serif+4:opsz,wght@8..60,600;8..60,900&amp;display=swap" rel="stylesheet"></link>
+<link rel="stylesheet" href="minicourse.css"></link>
+</head>
+<body id="home">
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a class="brand" href="#home">MiniCourse<span class="brand-dot"> · </span>MLLM</a>
+    <div class="nav-links">
+      <a href="#outline">Outline</a>
+      <a href="#background">Background</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#dataprep">Data</a>
+      <a href="#finetuning">Fine-tuning</a>
+      <a href="#inference">Inference</a>
+      <a href="#evaluation">Evaluation</a>
+      <a href="#takeaways">Takeaways</a>
+      <a href="#quiz">Quiz</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" data-screen-label="Hero">
+  <div class="container">
+    <span class="kicker">Mini Course</span>
+    <h1>Multimodal LLM (MLLM)</h1>
+    <p class="subtitle">A hands-on mini course on multimodal large language models and their clinical applications - from architecture to fine-tuning, inference, and evaluation with MedGemma&nbsp;1.5.</p>
+    <p class="byline"><strong>Tianhao (Terry) Fu</strong></p>
+    <p class="affil">University of Toronto · University Health Network</p>
+    <div class="hero-cta">
+      <a class="btn btn-solid" href="https://colab.research.google.com/drive/1-ZodGc_NQyqRsSdM2YAgP8pPGlQ6wGFl?usp=sharing" target="_blank" rel="noopener">Open in Colab</a>
+      <a class="btn btn-ghost" href="https://github.com/ATATC/MiniCourse-MLLM" target="_blank" rel="noopener">Course Repository</a>
+      <a class="btn btn-ghost" href="#quiz">Take the Quiz</a>
+    </div>
+  </div>
+</header>
+
+<section class="section" id="about" data-screen-label="About">
+  <div class="container">
+    <h2 class="section-title">About this mini course</h2>
+    <p class="section-lede">Multimodal LLMs combine images, text, video, and audio in a single model - and they are rapidly becoming practical tools in clinical workflows. This mini course walks through the complete pipeline for a medical <em>image-text-to-text</em> task: understanding how MLLMs align modalities, dissecting the MedGemma&nbsp;1.5 architecture, then preparing the FLARE-MLLM-2D dataset, fine-tuning with QLoRA, running inference, and evaluating report generation with CRIMSON and GREEN scores.</p>
+    <p>Every hands-on step runs in an interactive Jupyter notebook on Colab, and everything is mirrored in the <a href="https://github.com/ATATC/MiniCourse-MLLM" target="_blank" rel="noopener">course repository on GitHub</a>.</p>
+  </div>
+</section>
+
+<section class="section" id="outline" data-screen-label="Course Outline">
+  <div class="container">
+    <h2 class="section-title">Course outline</h2>
+    <table class="outline-table">
+      <tbody>
+        <tr>
+          <td class="num">01</td>
+          <td class="what"><strong>Background</strong><span>Introduction to MLLM + clinical applications</span></td>
+          <td class="go"><a href="#background">Jump →</a></td>
+        </tr>
+        <tr>
+          <td class="num">02</td>
+          <td class="what"><strong>Model Architecture</strong><span>Detailed description of the MedGemma 1.5 model architecture</span></td>
+          <td class="go"><a href="#architecture">Jump →</a></td>
+        </tr>
+        <tr>
+          <td class="num">03</td>
+          <td class="what"><strong>Data Preparation</strong><span>Prepare the FLARE-MLLM-2D dataset for fine-tuning</span></td>
+          <td class="go"><a href="#dataprep">Jump →</a></td>
+        </tr>
+        <tr>
+          <td class="num">04</td>
+          <td class="what"><strong>Fine-tuning</strong><span>Fine-tune MedGemma 1.5 4B on the preprocessed dataset</span></td>
+          <td class="go"><a href="#finetuning">Jump →</a></td>
+        </tr>
+        <tr>
+          <td class="num">05</td>
+          <td class="what"><strong>Inference</strong><span>Infer with the base and fine-tuned MedGemma 1.5 4B</span></td>
+          <td class="go"><a href="#inference">Jump →</a></td>
+        </tr>
+        <tr>
+          <td class="num">06</td>
+          <td class="what"><strong>Evaluation</strong><span>Evaluate MedGemma 1.5 4B&rsquo;s performance on report generation using CRIMSON score and GREEN score</span></td>
+          <td class="go"><a href="#evaluation">Jump →</a></td>
+        </tr>
+        <tr>
+          <td class="num">07</td>
+          <td class="what"><strong>Conclusion</strong><span>Summary of what we have covered in the mini course</span></td>
+          <td class="go"><a href="#takeaways">Jump →</a></td>
+        </tr>
+        <tr>
+          <td class="num">08</td>
+          <td class="what"><strong>Quiz</strong><span>Test your knowledge with the provided NotebookLM</span></td>
+          <td class="go"><a href="#quiz">Jump →</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="section alt" id="background" data-screen-label="01 Background">
+  <div class="container">
+    <p class="section-eyebrow">Module 01</p>
+    <h2 class="section-title">Background</h2>
+    <p class="section-lede">Introduction to MLLM + clinical applications.</p>
+
+    <h3 class="subhead">Introduction to MLLM</h3>
+    <div class="split">
+      <div>
+        <p>MLLM emphasizes the <strong>alignment of latent spaces</strong> between different modalities. We are extremely familiar with the classic encoder&ndash;decoder networks like UNet - so it is very intuitive that we can merge multiple encoders and decoders in different combinations to perform different types of tasks.</p>
+        <p>Based on the input and output modalities, we can classify MLLMs into categories like the ones on the right. Hugging Face also uses these categories.</p>
+      </div>
+      <div class="panel">
+        <h4>MLLM task categories</h4>
+        <ul>
+          <li>Audio-text-to-text</li>
+          <li>Image-text-to-text</li>
+          <li>Image-text-to-image</li>
+          <li>Image-text-to-video</li>
+          <li>Video-text-to-text</li>
+          <li>Any-to-any</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="margin-top: 36px; max-width: 900px;">
+      <p>Recall the training process of a naive UNet. It is essentially training a pair of mappings: <strong>encoder</strong> (input &rarr; latent) and <strong>decoder</strong> (latent &rarr; output). The optimization process is inherently stochastic, which makes the latent space nondeterministic across trials. Therefore, two independently trained encoders and decoders <em>do not share the same latent space</em>. To align them, there are several approaches, shown below.</p>
+    </div>
+      <div class="card-grid" style="grid-template-columns: repeat(4, 1fr); margin-top: 18px; gap: 16px;">
+        <div class="approach-card">
+          <h4>LLaVA-style</h4>
+          <p>Align vision features to an existing LLM</p>
+          <div class="pc">
+            <div class="pc-row pro"><span class="pc-mark">+</span><span>Simple projector, cheap to train, reuses a full off-the-shelf LLM</span></div>
+            <div class="pc-row con"><span class="pc-mark">-</span><span>Every visual token sits in the input sequence, so long/many images inflate context length</span></div>
+          </div>
+        </div>
+        <div class="approach-card">
+          <h4>BLIP-2-style</h4>
+          <p>Compress vision through learned queries</p>
+          <div class="pc">
+            <div class="pc-row pro"><span class="pc-mark">+</span><span>Fixed, small number of visual tokens regardless of image size or resolution</span></div>
+            <div class="pc-row con"><span class="pc-mark">-</span><span>Extra Q-Former to train, and compression can lose fine-grained visual detail</span></div>
+          </div>
+        </div>
+        <div class="approach-card">
+          <h4>Flamingo-style</h4>
+          <p>Inject vision through cross-attention</p>
+          <div class="pc">
+            <div class="pc-row pro"><span class="pc-mark">+</span><span>Handles many interleaved images/video without growing the text sequence</span></div>
+            <div class="pc-row con"><span class="pc-mark">-</span><span>Requires splicing new cross-attention layers into the LLM, more invasive and harder to adapt with lightweight fine-tuning</span></div>
+          </div>
+        </div>
+        <div class="approach-card">
+          <h4>Kosmos-style</h4>
+          <p>Train a unified multimodal autoregressive model</p>
+          <div class="pc">
+            <div class="pc-row pro"><span class="pc-mark">+</span><span>One shared representation space by design, flexible across input/output modalities</span></div>
+            <div class="pc-row con"><span class="pc-mark">-</span><span>Most data- and compute-hungry option, can't just bolt onto an existing pretrained LLM</span></div>
+          </div>
+        </div>
+      </div>
+
+    <figure class="figure">
+      <img src="img/image2.png" alt="General MLLM architecture: modality encoder, input projector, LLM backbone, output projector, modality generator"></img>
+      <figcaption class="figcaption">The general anatomy of an MLLM: modality encoders project non-text inputs into the LLM backbone; projectors and generators map latents back out to other modalities.</figcaption>
+      <p class="credit">Figure credit: NVIDIA. (n.d.). Multimodal large language models. NVIDIA Glossary. Retrieved from <a href="https://www.nvidia.com/en-us/glossary/multimodal-large-language-models/" target="_blank" rel="noopener">nvidia.com/en-us/glossary/multimodal-large-language-models</a> &nbsp;·&nbsp; Extended reading: <a href="https://www.nvidia.com/en-us/glossary/multimodal-large-language-models/" target="_blank" rel="noopener">Multimodal Large Language Models - NVIDIA</a></p>
+    </figure>
+
+    <h3 class="subhead">Clinical applications of MLLMs</h3>
+    <div class="split">
+      <div>
+        <p>MLLMs are powerful in a clinical workflow for <strong>perception</strong>, <strong>reasoning</strong>, <strong>documentation</strong>, <strong>triage</strong>, and <strong>patient-facing support</strong>.</p>
+        <p>Below are five concrete clinical applications (CAs), each illustrating one way an MLLM slots into practice.</p>
+      </div>
+      <div class="panel">
+        <h4>Five clinical applications</h4>
+        <ul>
+          <li><a href="#ca1">CA1 - Report generation</a></li>
+          <li><a href="#ca2">CA2 - Longitudinal comparison</a></li>
+          <li><a href="#ca3">CA3 - Multi-class classification</a></li>
+          <li><a href="#ca4">CA4 - Multi-label classification</a></li>
+          <li><a href="#ca5">CA5 - Regression</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 class="subhead" id="ca1"><span class="tag">CA1</span>Report generation</h3>
+    <p>In a report generation task, the MLLM:</p>
+    <ul>
+      <li>Reads X-ray, CT, MRI, ultrasound, or PET images</li>
+      <li>Drafts findings and impression</li>
+      <li>Speeds up reporting, helps standardize language, and may reduce missed findings</li>
+    </ul>
+    <figure class="figure">
+      <img src="img/image1.png" alt="MLLM caption generation process producing a bronchoscopy examination report with human revision" style="max-width: 760px;"></img>
+      <p class="credit">Figure credit: Luo, X., Huang, X., Liang, X. et al. Towards Automated Reporting: A Bronchoscopy Report Dataset for Enhancing Multimodality Large Language Models. Sci Data 13, 339 (2026). <a href="https://doi.org/10.1038/s41597-026-06692-8" target="_blank" rel="noopener">doi.org/10.1038/s41597-026-06692-8</a></p>
+    </figure>
+
+    <h3 class="subhead" id="ca2"><span class="tag">CA2</span>Longitudinal comparison</h3>
+    <p>In a longitudinal comparison task, the MLLM:</p>
+    <ul>
+      <li>Compares current and prior studies</li>
+      <li>Detects disease progression, treatment response, or interval change</li>
+    </ul>
+    <figure class="figure">
+      <img src="img/image5.png" alt="Comparison of MLLM radiology answers with and without a prior study" style="max-width: 620px;"></img>
+      <p class="credit">Figure credit: Zhang, X., Meng, Z., Lever, J., &amp; Ho, E. S. (2025, July). Libra: Leveraging temporal images for biomedical radiology analysis. In Findings of the Association for Computational Linguistics: ACL 2025 (pp. 17275&ndash;17303). <a href="https://doi.org/10.48550/arXiv.2411.19378" target="_blank" rel="noopener">doi.org/10.48550/arXiv.2411.19378</a></p>
+    </figure>
+
+    <h3 class="subhead" id="ca3"><span class="tag">CA3</span>Multi-class classification</h3>
+    <p>In a multi-class classification task, the MLLM outputs <strong>one label</strong> for several classes. It is the same as naive classification, but with outputs in the form of text - we use string parsers to convert the textual class ids into integers. Some common clinical examples are BI-RADS category, tumor subtype, disease stage, and dermatology diagnosis category.</p>
+    <div class="pipeline">
+      <div class="pipe-stack">
+        <div class="pipe-row">
+          <div class="pipe-input"><img src="img/image7.png" alt="Photo of a tabby cat"></img></div>
+          <span class="pipe-arrow">&rarr;</span>
+          <div class="pipe-box">Vision Encoder</div>
+        </div>
+        <div class="pipe-row">
+          <div class="pipe-input">&ldquo;What animal is shown in the image? Answer in a single {class id} only: 0 for cat, 1 for dog, and 2 for owl.&rdquo;</div>
+          <span class="pipe-arrow">&rarr;</span>
+          <div class="pipe-box">Text Encoder</div>
+        </div>
+      </div>
+      <span class="pipe-arrow">&rarr;</span>
+      <div class="pipe-box hl">LLM</div>
+      <span class="pipe-arrow">&rarr;</span>
+      <div class="pipe-out">0</div>
+    </div>
+    <p class="credit" style="text-align:center;">Figure credit: <a href="https://en.wikipedia.org/wiki/Cat#/media/File:Cat_August_2010-4.jpg" target="_blank" rel="noopener">Wikipedia - Cat (Cat_August_2010-4.jpg)</a></p>
+
+    <h3 class="subhead" id="ca4"><span class="tag">CA4</span>Multi-label classification</h3>
+    <p>In a multi-label classification task, the MLLM outputs <strong>multiple labels at once</strong>. Common clinical examples include chest X-ray findings: edema, consolidation, atelectasis, cardiomegaly, and pleural effusion.</p>
+    <figure class="figure">
+      <img src="img/image3.png" alt="Multi-class versus multi-label classification examples with one-hot and multi-hot label vectors" style="max-width: 680px;"></img>
+      <p class="credit">Figure credit: Sharma, G. (2021, February 7). Multi-label classification. Medium; Analytics Vidhya. <a href="https://medium.com/analytics-vidhya/multi-label-classification-a9643d221954" target="_blank" rel="noopener">medium.com/analytics-vidhya/multi-label-classification</a></p>
+    </figure>
+
+    <h3 class="subhead" id="ca5"><span class="tag">CA5</span>Regression</h3>
+    <p>In a regression task, the MLLM outputs a <strong>continuous value</strong>. It is the same as naive regression, but with outputs in the form of text - we use string parsers to convert the strings into floats. Some common clinical examples are ejection fraction, tumor size, organ volume, lab value prediction, risk score, and survival time.</p>
+    <div class="pipeline">
+      <div class="pipe-stack">
+        <div class="pipe-row">
+          <div class="pipe-input"><img src="img/image7.png" alt="Photo of a tabby cat"></img></div>
+          <span class="pipe-arrow">&rarr;</span>
+          <div class="pipe-box">Vision Encoder</div>
+        </div>
+        <div class="pipe-row">
+          <div class="pipe-input">&ldquo;What percentage of the image area does the cat occupy?&rdquo;</div>
+          <span class="pipe-arrow">&rarr;</span>
+          <div class="pipe-box">Text Encoder</div>
+        </div>
+      </div>
+      <span class="pipe-arrow">&rarr;</span>
+      <div class="pipe-box hl">LLM</div>
+      <span class="pipe-arrow">&rarr;</span>
+      <div class="pipe-out">0.43</div>
+    </div>
+    <p class="credit" style="text-align:center;">Figure credit: <a href="https://en.wikipedia.org/wiki/Cat#/media/File:Cat_August_2010-4.jpg" target="_blank" rel="noopener">Wikipedia - Cat (Cat_August_2010-4.jpg)</a></p>
+
+    <h3 class="subhead">Course setup</h3>
+    <div class="split">
+      <div>
+        <p>In this mini course, we are going to use <strong>MedGemma 1.5 4B</strong> as an example. The MedGemma family consists of LLaVA-style vision-language models (VLMs) designed for image-text-to-text tasks, specialized in medical images.</p>
+        <p>Throughout the mini course, we will be learning hands-on examples with MedGemma 1.5, covering a complete pipeline for the report generation task using the FLARE-MLLM-2D dataset.</p>
+      </div>
+      <div class="panel">
+        <h4>The hands-on pipeline</h4>
+        <ul>
+          <li>Data preparation</li>
+          <li>Fine-tuning</li>
+          <li>Inference</li>
+          <li>Evaluation</li>
+        </ul>
+        <p class="note">Dataset: <code>FLARE-MLLM-2D</code> · Model: <code>MedGemma 1.5 4B</code></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="architecture" data-screen-label="02 Model Architecture">
+  <div class="container">
+    <p class="section-eyebrow">Module 02</p>
+    <h2 class="section-title">Model architecture</h2>
+    <p class="section-lede">Detailed description of the MedGemma 1.5 model architecture.</p>
+
+    <h3 class="subhead">MedGemma overview</h3>
+    <figure class="figure borderless">
+      <img src="img/image4.png" alt="MedGemma collection: MedGemma 1.5 4B, MedGemma 27B, and the MedSigLIP vision encoder across 2D imaging, text, and advanced imaging" style="max-width: 860px;"></img>
+      <p class="credit">Figure credit: Sellergren, A., Gao, C., Mahvar, F., Kohlberger, T., Jamil, F., Traverse, M., ... &amp; Golden, D. (2026). MedGemma 1.5 technical report. arXiv preprint arXiv:2604.05081. <a href="https://doi.org/10.48550/arXiv.2604.05081" target="_blank" rel="noopener">doi.org/10.48550/arXiv.2604.05081</a></p>
+    </figure>
+
+    <h3 class="subhead">MedGemma 1.5</h3>
+    <div class="pipeline">
+      <div class="pipe-box">3D CT Scan</div>
+      <span class="pipe-arrow">&rarr;</span>
+      <div class="pipe-box">2D Slices</div>
+      <span class="pipe-arrow">&rarr;</span>
+      <div class="pipe-box hl">MedSigLIP<small>Encoder</small></div>
+      <span class="pipe-arrow">&rarr;</span>
+      <div class="pipe-box hl">Gemma 3<small>Decoder</small></div>
+      <span class="pipe-arrow">&rarr;</span>
+      <div class="pipe-box">Text Outputs</div>
+    </div>
+
+    <div class="arch-expand">
+      <div class="arch-card">
+        <p class="arch-card-head"><strong>Inside MedSigLIP</strong><small>Encoder-only Vision Transformer (ViT) &middot; SigLIP-400M tuned on medical data</small></p>
+        <div class="arch-stack">
+          <div class="arch-layer io">448&times;448 tile<small>one of four tiles cut from the 896&times;896 input image</small></div>
+          <span class="arch-down">&darr;</span>
+          <div class="arch-layer">Patch embedding<small>14&times;14 pixel patches &rarr; 32&times;32 = 1,024 patch tokens + position embeddings</small></div>
+          <span class="arch-down">&darr;</span>
+          <div class="arch-repeat">
+            <span class="arch-repeat-label">&times; 27 blocks</span>
+            <div class="arch-layer">Bidirectional self-attention<small>16 heads &middot; width 1,152 &middot; every patch attends to every patch - no causal mask</small></div>
+            <span class="arch-down">&darr;</span>
+            <div class="arch-layer">MLP<small>GELU &middot; hidden 4,304 &middot; LayerNorm around each sub-layer</small></div>
+          </div>
+          <span class="arch-down">&darr;</span>
+          <div class="arch-layer">4&times;4 average pooling<small>1,024 patch tokens &rarr; 64 visual tokens per tile</small></div>
+          <span class="arch-down">&darr;</span>
+          <div class="arch-layer">Multimodal projector<small>norm + linear map into Gemma 3&rsquo;s 2,560-d embedding space</small></div>
+          <span class="arch-down">&darr;</span>
+          <div class="arch-layer io">64 visual tokens per tile<small>256 per 896&times;896 image</small></div>
+        </div>
+        <p class="arch-note">MedSigLIP is the 400M-parameter SigLIP image encoder further trained on medical image&ndash;text pairs with SigLIP&rsquo;s sigmoid contrastive loss, so its visual features are aligned with medical language before the LLM ever sees them.</p>
+      </div>
+      <div class="arch-card">
+        <p class="arch-card-head"><strong>Inside Gemma 3 (4B)</strong><small>Decoder-only Transformer LLM &middot; generates text autoregressively</small></p>
+        <div class="arch-stack">
+          <div class="arch-layer io">Input sequence<small>text tokens (262K SentencePiece vocab) with visual tokens spliced in at each image position</small></div>
+          <span class="arch-down">&darr;</span>
+          <div class="arch-layer">Token embeddings<small>d<sub>model</sub> = 2,560 &middot; shared with the output layer</small></div>
+          <span class="arch-down">&darr;</span>
+          <div class="arch-repeat">
+            <span class="arch-repeat-label">&times; 34 blocks</span>
+            <div class="arch-layer">Grouped-query attention + RoPE<small>8 query heads share 4 KV heads &middot; head dim 256 &middot; RMSNorm before &amp; after</small></div>
+            <span class="arch-down">&darr;</span>
+            <div class="arch-layer">GeGLU feed-forward<small>hidden dimension 10,240</small></div>
+            <p class="arch-repeat-note">5 local sliding-window attention layers (1,024-token window) for every 1 global layer &rarr; a 128K-token context at manageable KV-cache cost</p>
+          </div>
+          <span class="arch-down">&darr;</span>
+          <div class="arch-layer">Final RMSNorm + LM head<small>probability distribution over the 262K vocabulary</small></div>
+          <span class="arch-down">&darr;</span>
+          <div class="arch-layer io">Next token<small>appended to the sequence and fed back in until the report is complete</small></div>
+        </div>
+        <p class="arch-note">Attention is causal over text - each token sees only its past - but all visual tokens belonging to the same image attend to each other bidirectionally.</p>
+      </div>
+    </div>
+
+    <p>MedGemma 1.5 4B is based on Gemma 3 with the same general architecture, using a <strong>400M MedSigLIP vision encoder</strong> as the visual front end and a <strong>decoder-only Transformer LLM</strong> as the text generator. Images are normalized to 896&times;896 and encoded into <strong>256 visual tokens per image</strong>.</p>
+    <p>The key improvement between MedGemma 1 and MedGemma 1.5 is the <strong>long context window</strong>, with which we are able to feed multiple uniformly sampled slices (up to 85, modeled as a time sequence) to represent a 3D volume. However, in this mini course, we only deal with 2D images.</p>
+    <p>Note that it processes each 896&times;896 image as four 448&times;448 tiles, and each tile yields 64 visual tokens.</p>
+    <p class="credit">Cited: Sellergren, A., Gao, C., Mahvar, F., Kohlberger, T., Jamil, F., Traverse, M., ... &amp; Golden, D. (2026). MedGemma 1.5 technical report. arXiv preprint arXiv:2604.05081. <a href="https://doi.org/10.48550/arXiv.2604.05081" target="_blank" rel="noopener">doi.org/10.48550/arXiv.2604.05081</a></p>
+  </div>
+</section>
+
+<section class="section alt" id="dataprep" data-screen-label="03 Data Preparation">
+  <div class="container">
+    <p class="section-eyebrow">Module 03</p>
+    <h2 class="section-title">Data preparation</h2>
+    <p class="section-lede">Prepare the FLARE-MLLM-2D dataset for fine-tuning.</p>
+
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div>
+        <h4>Download FLARE-MLLM-2D <span class="time-badge">&asymp; 2 minutes</span></h4>
+        <p>The FLARE-MLLM-2D dataset is a multimodal dataset for the MICCAI FLARE challenge. It can be downloaded (with permissions) through <a href="https://huggingface.co/datasets/FLARE-MedFM/FLARE-MLLM-2D" target="_blank" rel="noopener">Hugging Face</a>.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div>
+        <h4>Preprocess <span class="time-badge">&asymp; 5 minutes</span></h4>
+        <p>Since we use Hugging Face&rsquo;s <code style="font-family: Consolas, monospace; font-size: 15px;">transformers</code> as the backend of the pipeline, we want to convert the dataset format into Hugging Face&rsquo;s supervised fine-tuning (SFT) records&rsquo; format.</p>
+      </div>
+    </div>
+
+    <div class="tryit">
+      <div>
+        <h3>Try it out yourself!</h3>
+        <p>Please find the interactive Jupyter Notebook attached on Colab. You can also find everything in the course repository on GitHub.</p>
+      </div>
+      <div class="hero-cta">
+        <a class="btn btn-solid" href="https://colab.research.google.com/drive/1-ZodGc_NQyqRsSdM2YAgP8pPGlQ6wGFl?usp=sharing" target="_blank" rel="noopener">Open in Colab</a>
+        <a class="btn btn-ghost" href="https://github.com/ATATC/MiniCourse-MLLM" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="finetuning" data-screen-label="04 Fine-tuning">
+  <div class="container">
+    <p class="section-eyebrow">Module 04</p>
+    <h2 class="section-title">Fine-tuning</h2>
+    <p class="section-lede">Fine-tune MedGemma 1.5 4B on the preprocessed dataset.</p>
+
+    <h3 class="subhead">Fine-tuning protocols</h3>
+    <p>Even with foundation models trained on massive amounts of data, it is still extremely common that the application dataset is <strong>out of distribution (OoD)</strong>. To adapt to the target domain, we need to apply fine-tuning. There are multiple ways to perform fine-tuning; in this mini course, we will focus on parameter-efficient fine-tuning (PEFT) - specifically <strong>QLoRA</strong>.</p>
+    <ul class="protocol-list">
+      <li><strong>Full fine-tuning</strong><span>Update all model parameters on a task-specific dataset</span></li>
+      <li><strong>Feature extraction</strong><span>Freeze the foundation model and train only a task-specific output head</span></li>
+      <li><strong>Adapter tuning</strong><span>Insert small trainable adapter modules between existing layers</span></li>
+      <li><strong>Prefix tuning</strong><span>Learn task-specific prefix vectors that guide the model&rsquo;s hidden states</span></li>
+      <li><strong>Prompt tuning</strong><span>Train soft prompt embeddings while keeping the base model frozen</span></li>
+      <li class="focus"><strong>Low-rank adaptation</strong><span>LoRA freezes the original model and trains small, low-rank adapter matrices - QLoRA compresses the original base model weights to low precision (usually 4-bit) before applying those same LoRA adapters</span></li>
+    </ul>
+
+    <figure class="figure">
+      <img src="img/image6.png" alt="LoRA: frozen weight matrix W0 plus trainable low-rank matrices A and B" style="max-width: 620px;"></img>
+      <figcaption class="figcaption">LoRA keeps W&#8320; frozen and learns a low-rank update AB; QLoRA applies the same adapters on top of 4-bit quantized base weights.</figcaption>
+      <p class="credit">Figure credit: G&ouml;rner, M. (2025, March 13). Are you still using LoRA to fine-tune your LLM? Towards Data Science. <a href="http://towardsdatascience.com/are-you-still-using-lora-to-fine-tune-your-llm/" target="_blank" rel="noopener">towardsdatascience.com/are-you-still-using-lora-to-fine-tune-your-llm</a></p>
+    </figure>
+
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div>
+        <h4>Run fine-tuning <span class="time-badge">&asymp; 15 minutes, depending on GPU</span></h4>
+        <p>In this mini course, we will fine-tune for only <strong>0.25 epochs</strong> to save time.</p>
+      </div>
+    </div>
+
+    <div class="tryit">
+      <div>
+        <h3>Try it out yourself!</h3>
+        <p>Please find the interactive Jupyter Notebook attached on Colab. You would need a GPU runtime with <strong>&ge;40 GB VRAM</strong>: A100, H100, or G4. Everything is also in the course repository on GitHub.</p>
+      </div>
+      <div class="hero-cta">
+        <a class="btn btn-solid" href="https://colab.research.google.com/drive/1-ZodGc_NQyqRsSdM2YAgP8pPGlQ6wGFl?usp=sharing" target="_blank" rel="noopener">Open in Colab</a>
+        <a class="btn btn-ghost" href="https://github.com/ATATC/MiniCourse-MLLM" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="inference" data-screen-label="05 Inference">
+  <div class="container">
+    <p class="section-eyebrow">Module 05</p>
+    <h2 class="section-title">Inference</h2>
+    <p class="section-lede">Infer with the base and fine-tuned MedGemma 1.5 4B.</p>
+
+    <div class="step-card">
+      <div class="step-num">4</div>
+      <div>
+        <h4>Run inference <span class="time-badge">&asymp; 5 minutes, depending on GPU</span></h4>
+        <p>Now let us infer on <strong>16 samples</strong> (to save time) in the validation set, with both the base and the fine-tuned model.</p>
+      </div>
+    </div>
+
+    <div class="tryit">
+      <div>
+        <h3>Try it out yourself!</h3>
+        <p>Please find the interactive Jupyter Notebook attached on Colab. You would need a GPU runtime with <strong>&ge;40 GB VRAM</strong>: A100, H100, or G4. Everything is also in the course repository on GitHub.</p>
+      </div>
+      <div class="hero-cta">
+        <a class="btn btn-solid" href="https://colab.research.google.com/drive/1-ZodGc_NQyqRsSdM2YAgP8pPGlQ6wGFl?usp=sharing" target="_blank" rel="noopener">Open in Colab</a>
+        <a class="btn btn-ghost" href="https://github.com/ATATC/MiniCourse-MLLM" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="evaluation" data-screen-label="06 Evaluation">
+  <div class="container">
+    <p class="section-eyebrow">Module 06</p>
+    <h2 class="section-title">Evaluation</h2>
+    <p class="section-lede">Evaluate MedGemma 1.5 4B&rsquo;s performance on report generation using CRIMSON score and GREEN score.</p>
+
+    <h3 class="subhead">Evaluation metrics</h3>
+    <div class="compare">
+      <div class="panel">
+        <h3>CRIMSON Score</h3>
+        <ul>
+          <li>Checks chest X-ray reports</li>
+          <li>Compares generated report with reference report</li>
+          <li>Finds missing, false, and attribute-level findings</li>
+          <li>Weights errors by clinical severity</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>GREEN Score</h3>
+        <ul>
+          <li>Checks radiology reports broadly</li>
+          <li>Uses an LLM to detect and explain errors</li>
+          <li>Produces score + qualitative error descriptions</li>
+          <li>Aligns with radiologist error judgment</li>
+        </ul>
+      </div>
+    </div>
+
+    <figure class="figure">
+      <img src="img/image9.png" alt="GREEN evaluation compared with BLEU, ROUGE-L, BERTScore, and F1RadGraph on a pleural effusion example" style="max-width: 700px;"></img>
+      <figcaption class="figcaption">Unlike n-gram metrics, GREEN separates clinically correct from clinically wrong candidates and explains the errors it finds.</figcaption>
+      <p class="credit">Figure credit: Ostmeier, S., Xu, J., Chen, Z., Varma, M., Bluethgen, C., Michalson, A. E., Moseley, M., Langlotz, C., Chaudhari, A. S., &amp; Delbrouck, J.-B. (2024, May). GREEN: Generative radiology report evaluation and error notation. Stanford University. <a href="https://stanford-aimi.github.io/green.html" target="_blank" rel="noopener">stanford-aimi.github.io/green.html</a></p>
+    </figure>
+
+    <div class="step-card">
+      <div class="step-num">5</div>
+      <div>
+        <h4>Run evaluation <span class="time-badge">&asymp; 5 minutes, depending on GPU</span></h4>
+        <p>Let us evaluate the inference outputs using CRIMSON score and GREEN score.</p>
+      </div>
+    </div>
+
+    <div class="tryit">
+      <div>
+        <h3>Try it out yourself!</h3>
+        <p>Please find the interactive Jupyter Notebook attached on Colab. You would need a GPU runtime with <strong>&ge;40 GB VRAM</strong>: A100, H100, or G4. Everything is also in the course repository on GitHub.</p>
+      </div>
+      <div class="hero-cta">
+        <a class="btn btn-solid" href="https://colab.research.google.com/drive/1-ZodGc_NQyqRsSdM2YAgP8pPGlQ6wGFl?usp=sharing" target="_blank" rel="noopener">Open in Colab</a>
+        <a class="btn btn-ghost" href="https://github.com/ATATC/MiniCourse-MLLM" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="takeaways" data-screen-label="07 Conclusion">
+  <div class="container">
+    <p class="section-eyebrow">Module 07</p>
+    <h2 class="section-title">Conclusion - key takeaways</h2>
+    <ol class="takeaways">
+      <li>MLLMs combine multiple modalities such as images and text; the core challenge is modality alignment, since vision encoders and language models do not naturally share the same latent representation space.</li>
+      <li>Different architectures solve alignment differently - LLaVA-style projection, BLIP-2 learned queries, Flamingo-style cross-attention, and Kosmos-style unified modeling - enabling clinical tasks from report generation and longitudinal comparison to classification and regression.</li>
+      <li>The course&rsquo;s main example, MedGemma 1.5 4B, is a LLaVA-style model that pairs a MedSigLIP vision encoder with a Gemma 3 decoder, turning medical images into visual tokens the LLM uses to generate text.</li>
+      <li>The hands-on workflow uses the FLARE-MLLM-2D dataset, downloaded, preprocessed, and converted into Hugging Face supervised fine-tuning format.</li>
+      <li>Fine-tuning uses QLoRA - training small low-rank adapters on 4-bit weights - and results are evaluated with CRIMSON and GREEN scores that check radiology reports for clinical errors, missing findings, and severity-weighted mistakes.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="section" id="quiz" data-screen-label="08 Quiz">
+  <div class="container">
+    <p class="section-eyebrow">Module 08</p>
+    <h2 class="section-title">Quiz</h2>
+    <div class="quiz-card">
+      <h3>Test your learning outcomes</h3>
+      <p>A NotebookLM has been prepared with the course materials - quiz yourself on everything covered in this mini course.</p>
+      <a class="btn btn-solid" href="https://notebooklm.google.com/notebook/5e374c8e-59eb-4641-b099-41bfe438119b" target="_blank" rel="noopener">Open the NotebookLM Quiz</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="instructor" data-screen-label="Instructor">
+  <div class="container">
+    <h2 class="section-title">Instructor</h2>
+    <div class="instructor">
+      <image-slot id="instructor-photo" shape="circle" style="width: 132px; height: 132px;" placeholder="Drop a portrait" src="img/portrait.jpg"></image-slot>
+      <div class="who">
+        <h3>Tianhao (Terry) Fu</h3>
+        <p>University of Toronto · University Health Network</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer" id="contact" data-screen-label="Footer">
+  <div class="container">
+    <div class="cols">
+      <div>
+        <h3>Course materials</h3>
+        <p><a href="https://colab.research.google.com/drive/1-ZodGc_NQyqRsSdM2YAgP8pPGlQ6wGFl?usp=sharing" target="_blank" rel="noopener">Interactive notebook on Colab</a><br></br>
+        <a href="https://github.com/ATATC/MiniCourse-MLLM" target="_blank" rel="noopener">Course repository on GitHub</a><br></br>
+        <a href="https://notebooklm.google.com/notebook/5e374c8e-59eb-4641-b099-41bfe438119b" target="_blank" rel="noopener">NotebookLM quiz</a></p>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <p>Questions or corrections? Please open an issue on the <a href="https://github.com/ATATC/MiniCourse-MLLM" target="_blank" rel="noopener">course GitHub repository</a>.</p>
+      </div>
+    </div>
+    <p class="fineprint">MiniCourse: Multimodal LLM (MLLM) · Tianhao (Terry) Fu · University of Toronto; University Health Network. Figures remain the property of their cited sources.</p>
+  </div>
+</footer>
+
+<script src="image-slot.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="minicourse-tweaks.jsx"></script>
+
+
+</body>
+</html>
