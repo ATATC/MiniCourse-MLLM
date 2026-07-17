@@ -13,34 +13,32 @@
       title: "LLaVA-style — projection",
       note: "A small trainable projector maps vision features straight into the LLM's embedding space; the resulting visual tokens simply join the text sequence. Cheap to train — but every image spends real context length.",
       nodes: {
-        img:  { x: 24,  y: 60,  w: 118, h: 52, kind: "io", label: "Image", sub: "" },
-        txt:  { x: 24,  y: 188, w: 118, h: 52, kind: "io", label: "Text prompt", sub: "" },
-        venc: { x: 180, y: 60,  w: 130, h: 52, kind: "frozen", label: "Vision Encoder", sub: "frozen" },
-        proj: { x: 346, y: 60,  w: 122, h: 52, kind: "trainable", label: "Projector", sub: "trainable" },
-        seq:  { x: 500, y: 122, w: 156, h: 58, kind: "seq", label: "Joint sequence", sub: "visual + text tokens" },
-        llm:  { x: 690, y: 122, w: 132, h: 58, kind: "trainable", label: "LLM Decoder", sub: "fine-tuned / LoRA" },
-        out:  { x: 852, y: 122, w: 88,  h: 58, kind: "io", label: "Text", sub: "" }
+        img:  { x: 24,  y: 60,  w: 120, h: 52, kind: "io", label: "Image", sub: "" },
+        venc: { x: 176, y: 60,  w: 132, h: 52, kind: "frozen", label: "Vision Encoder", sub: "frozen" },
+        proj: { x: 340, y: 60,  w: 124, h: 52, kind: "trainable", label: "Projector", sub: "trainable" },
+        txt:  { x: 24,  y: 188, w: 120, h: 52, kind: "io", label: "Text prompt", sub: "" },
+        llm:  { x: 600, y: 124, w: 140, h: 52, kind: "trainable", label: "LLM Decoder", sub: "fine-tuned / LoRA" },
+        out:  { x: 780, y: 124, w: 120, h: 52, kind: "io", label: "Text", sub: "" }
       },
       edges: [
         { from: "img", to: "venc", carries: "image" },
         { from: "venc", to: "proj", carries: "image" },
-        { from: "proj", to: "seq", carries: "image", a: "right", b: "left" },
-        { from: "txt", to: "seq", carries: "text", a: "right", b: "left" },
-        { from: "seq", to: "llm", carries: "mixed" },
-        { from: "llm", to: "out", carries: "mixed" }
+        { from: "proj", to: "llm", carries: "image", a: "right", b: "left" },
+        { from: "txt", to: "llm", carries: "text", a: "right", b: "left" },
+        { from: "llm", to: "out", carries: "text" }
       ]
     },
     blip2: {
       title: "BLIP-2-style — learned queries",
       note: "A Q-Former sits between two frozen models and squeezes visual features through a fixed set of 32 learned query tokens — a constant visual footprint no matter how large or detailed the image.",
       nodes: {
-        img:  { x: 24,  y: 60,  w: 112, h: 52, kind: "io", label: "Image", sub: "" },
-        venc: { x: 172, y: 60,  w: 126, h: 52, kind: "frozen", label: "Vision Encoder", sub: "frozen" },
-        qf:   { x: 334, y: 60,  w: 118, h: 52, kind: "trainable", label: "Q-Former", sub: "32 queries" },
-        vtok: { x: 488, y: 60,  w: 118, h: 52, kind: "io", label: "32 tokens", sub: "fixed length" },
-        txt:  { x: 24,  y: 188, w: 118, h: 52, kind: "io", label: "Text prompt", sub: "" },
-        llm:  { x: 690, y: 122, w: 132, h: 58, kind: "frozen", label: "LLM Decoder", sub: "frozen" },
-        out:  { x: 852, y: 122, w: 88,  h: 58, kind: "io", label: "Text", sub: "" }
+        img:  { x: 24,  y: 60,  w: 116, h: 52, kind: "io", label: "Image", sub: "" },
+        venc: { x: 168, y: 60,  w: 128, h: 52, kind: "frozen", label: "Vision Encoder", sub: "frozen" },
+        qf:   { x: 324, y: 60,  w: 120, h: 52, kind: "trainable", label: "Q-Former", sub: "32 queries" },
+        vtok: { x: 472, y: 60,  w: 120, h: 52, kind: "io", label: "32 tokens", sub: "fixed length" },
+        txt:  { x: 24,  y: 188, w: 120, h: 52, kind: "io", label: "Text prompt", sub: "" },
+        llm:  { x: 656, y: 124, w: 140, h: 52, kind: "frozen", label: "LLM Decoder", sub: "frozen" },
+        out:  { x: 812, y: 124, w: 104, h: 52, kind: "io", label: "Text", sub: "" }
       },
       edges: [
         { from: "img", to: "venc", carries: "image" },
@@ -48,20 +46,20 @@
         { from: "qf", to: "vtok", carries: "image" },
         { from: "vtok", to: "llm", carries: "image", a: "right", b: "left" },
         { from: "txt", to: "llm", carries: "text", a: "right", b: "left" },
-        { from: "llm", to: "out", carries: "mixed" }
+        { from: "llm", to: "out", carries: "text" }
       ]
     },
     flamingo: {
       title: "Flamingo-style — gated cross-attention",
       note: "Vision never enters the text sequence. Text tokens are the queries into new gated cross-attention layers, which attend to resampled visual features (keys/values); the result flows on through the frozen LM blocks — great for many interleaved images without growing context.",
       nodes: {
-        img:   { x: 24,  y: 34,  w: 122, h: 50, kind: "io", label: "Image / frames", sub: "" },
-        venc:  { x: 184, y: 34,  w: 126, h: 50, kind: "frozen", label: "Vision Encoder", sub: "frozen" },
-        resamp:{ x: 348, y: 34,  w: 150, h: 50, kind: "trainable", label: "Perceiver Resampler", sub: "trainable" },
-        xattn: { x: 556, y: 120, w: 156, h: 52, kind: "trainable", label: "Gated cross-attn", sub: "×N, trainable" },
-        txt:   { x: 24,  y: 216, w: 122, h: 50, kind: "io", label: "Text tokens", sub: "" },
-        lmb:   { x: 556, y: 216, w: 156, h: 50, kind: "frozen", label: "Frozen LM block", sub: "×N, interleaved" },
-        out:   { x: 800, y: 166, w: 116, h: 56, kind: "io", label: "Text", sub: "" }
+        img:   { x: 24,  y: 34,  w: 128, h: 50, kind: "io", label: "Image / frames", sub: "" },
+        venc:  { x: 186, y: 34,  w: 128, h: 50, kind: "frozen", label: "Vision Encoder", sub: "frozen" },
+        resamp:{ x: 348, y: 34,  w: 156, h: 50, kind: "trainable", label: "Perceiver Resampler", sub: "trainable" },
+        xattn: { x: 528, y: 128, w: 158, h: 52, kind: "trainable", label: "Gated cross-attn", sub: "×N, trainable" },
+        txt:   { x: 24,  y: 214, w: 128, h: 50, kind: "io", label: "Text tokens", sub: "" },
+        lmb:   { x: 528, y: 214, w: 158, h: 50, kind: "frozen", label: "Frozen LM block", sub: "×N, interleaved" },
+        out:   { x: 748, y: 168, w: 120, h: 56, kind: "io", label: "Text", sub: "" }
       },
       edges: [
         { from: "img", to: "venc", carries: "image" },
@@ -69,26 +67,26 @@
         { from: "resamp", to: "xattn", carries: "image", a: "bottom", b: "top" },
         { from: "txt", to: "xattn", carries: "text", a: "right", b: "left" },
         { from: "xattn", to: "lmb", carries: "mixed", a: "bottom", b: "top" },
-        { from: "lmb", to: "out", carries: "mixed", a: "right", b: "left" }
+        { from: "lmb", to: "out", carries: "text", a: "right", b: "left" }
       ]
     },
     kosmos: {
       title: "Kosmos-style — unified model",
       note: "No encoder/decoder split: image and text tokens share one embedding space and pass through a single transformer, trained jointly end-to-end. The most flexible — and most data-hungry — of the four.",
       nodes: {
-        img:   { x: 24,  y: 60,  w: 130, h: 52, kind: "io", label: "Image patches", sub: "" },
-        txt:   { x: 24,  y: 188, w: 130, h: 52, kind: "io", label: "Text tokens", sub: "" },
-        embed: { x: 216, y: 124, w: 132, h: 54, kind: "trainable", label: "Shared embedding", sub: "" },
-        useq:  { x: 388, y: 124, w: 150, h: 54, kind: "seq", label: "Interleaved sequence", sub: "" },
-        unif:  { x: 578, y: 124, w: 170, h: 54, kind: "trainable", label: "Unified Transformer", sub: "×N, joint" },
-        out:   { x: 792, y: 124, w: 124, h: 54, kind: "io", label: "Text / boxes", sub: "" }
+        img:   { x: 24,  y: 60,  w: 132, h: 52, kind: "io", label: "Image patches", sub: "" },
+        txt:   { x: 24,  y: 188, w: 132, h: 52, kind: "io", label: "Text tokens", sub: "" },
+        embed: { x: 228, y: 124, w: 136, h: 52, kind: "trainable", label: "Shared embedding", sub: "" },
+        useq:  { x: 400, y: 124, w: 152, h: 52, kind: "seq", label: "Interleaved sequence", sub: "" },
+        unif:  { x: 588, y: 124, w: 170, h: 52, kind: "trainable", label: "Unified Transformer", sub: "×N, joint" },
+        out:   { x: 794, y: 124, w: 122, h: 52, kind: "io", label: "Text / boxes", sub: "" }
       },
       edges: [
         { from: "img", to: "embed", carries: "image", a: "right", b: "left" },
         { from: "txt", to: "embed", carries: "text", a: "right", b: "left" },
         { from: "embed", to: "useq", carries: "mixed" },
         { from: "useq", to: "unif", carries: "mixed" },
-        { from: "unif", to: "out", carries: "mixed" }
+        { from: "unif", to: "out", carries: "text" }
       ]
     }
   };
