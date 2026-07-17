@@ -147,6 +147,24 @@ p { text-wrap: pretty; }
 .panel .note { font-size: 14px; color: var(--ink-soft); margin: 12px 0 0; }
 .panel code { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 14px; background: var(--paper-alt); padding: 1px 5px; border-radius: 3px; }
 
+/* ---------- VLM style demo ---------- */
+.vlm-demo { margin: 30px 0 10px; border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px 18px; background: #fbfcfe; }
+.vlm-tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+.vlm-tab { padding: 8px 16px; border-radius: 999px; border: 1.5px solid #c8d2e0; background: #fff; font-weight: 700; font-size: 13.5px; cursor: pointer; color: var(--ink-soft); font-family: inherit; }
+.vlm-tab:hover { border-color: var(--accent); color: var(--accent); }
+.vlm-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.vlm-play { margin-left: auto; min-width: 92px; }
+.vlm-play:hover { border-color: var(--accent); }
+.vlm-legend { display: flex; gap: 20px; font-size: 12.5px; color: var(--ink-soft); margin: 0 0 6px; flex-wrap: wrap; }
+.vlm-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.vlm-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.vlm-swatch { width: 15px; height: 12px; border-radius: 3px; display: inline-block; }
+.vlm-swatch.trainable { background: #eef3fd; border: 1.6px solid #8fb0ea; }
+.vlm-swatch.frozen { background: #fff; border: 1.6px solid #c8d2e0; }
+.vlm-stage { width: 100%; }
+.vlm-svg { display: block; width: 100%; height: auto; }
+.vlm-note { margin: 8px 4px 2px; font-size: 13.5px; color: var(--ink-soft); line-height: 1.55; }
+
 /* ---------- approach cards ---------- */
 .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-top: 22px; }
 .approach-card {
